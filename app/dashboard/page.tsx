@@ -22,20 +22,20 @@ async function DashboardContent() {
     db.select({ id: bookmarks.id, title: bookmarks.title, url: bookmarks.url, description: bookmarks.description, category: bookmarks.category, isFavorite: bookmarks.isFavorite, createdAt: bookmarks.createdAt, technologyName: technologies.name, technologySlug: technologies.slug, brandColor: technologies.brandColor }).from(bookmarks).leftJoin(technologies, eq(bookmarks.technologyId, technologies.id)).where(bookmarkOwner(actor)).orderBy(desc(bookmarks.createdAt)).limit(3),
   ]);
   const stats = [
-    { label: "Total bookmarks", value: all.value, icon: Bookmark, color: "text-indigo-500 bg-indigo-500/10" },
-    { label: "Favorites", value: favorites.value, icon: Heart, color: "text-rose-500 bg-rose-500/10" },
-    { label: "Collections", value: collectionCount.value, icon: Folder, color: "text-amber-500 bg-amber-500/10" },
+    { label: "Total bookmarks", value: all.value, icon: Bookmark, color: "text-indigo-600 bg-indigo-500/10", glow: "from-indigo-500/10" },
+    { label: "Favorites", value: favorites.value, icon: Heart, color: "text-rose-600 bg-rose-500/10", glow: "from-rose-500/10" },
+    { label: "Collections", value: collectionCount.value, icon: Folder, color: "text-amber-600 bg-amber-500/10", glow: "from-amber-500/10" },
   ];
 
   return <>
     <PageHeading eyebrow="Workspace" title={`Welcome, ${actor.name ?? "Developer"}`} description="Here’s what’s happening in your developer library." />
-    <section className="grid gap-4 sm:grid-cols-3">{stats.map(({ label, value, icon: Icon, color }) => <article className="panel rounded-2xl p-5" key={label}><div className="flex items-start justify-between"><div><p className="muted text-sm">{label}</p><p className="mt-2 text-3xl font-bold tracking-tight">{value}</p></div><span className={`grid size-10 place-items-center rounded-xl ${color}`}><Icon size={19} /></span></div></article>)}</section>
-    <section className="mt-9"><div className="mb-4 flex items-center justify-between"><div><h2 className="text-lg font-semibold">Recently added</h2><p className="muted mt-1 text-sm">Your latest saved resources</p></div><Link href="/dashboard/bookmarks" className="flex items-center gap-1 text-sm font-semibold text-[var(--accent)]">View all <ArrowUpRight size={15} /></Link></div>{recent.length ? <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{recent.map(item => <BookmarkCard key={item.id} item={item} />)}</div> : <div className="panel grid min-h-52 place-items-center rounded-2xl p-6 text-center"><div><p className="font-semibold">Your stash is empty</p><Link href="/dashboard/bookmarks?new=true" className="mt-2 inline-block text-sm font-semibold text-[var(--accent)]">Add your first bookmark</Link></div></div>}</section>
+    <section className="grid gap-4 sm:grid-cols-3">{stats.map(({ label, value, icon: Icon, color, glow }) => <article className="panel relative overflow-hidden rounded-3xl p-6" key={label}><div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${glow} via-transparent to-transparent`} /><div className="relative flex items-start justify-between"><div><p className="muted text-sm font-medium">{label}</p><p className="mt-2 text-4xl font-black tracking-[-.04em]">{value}</p></div><span className={`grid size-11 place-items-center rounded-2xl ${color}`}><Icon size={20} /></span></div></article>)}</section>
+    <section className="mt-10"><div className="mb-5 flex items-center justify-between"><div><h2 className="text-xl font-bold tracking-tight">Recently added</h2><p className="muted mt-1 text-sm">Your latest saved resources</p></div><Link href="/dashboard/bookmarks" className="group flex items-center gap-1 text-sm font-bold text-[var(--accent)]">View all <ArrowUpRight size={15} className="transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></Link></div>{recent.length ? <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{recent.map(item => <BookmarkCard key={item.id} item={item} />)}</div> : <div className="panel grid min-h-56 place-items-center rounded-3xl p-6 text-center"><div><span className="mx-auto grid size-12 place-items-center rounded-2xl bg-indigo-500/10 text-indigo-500"><Bookmark size={21} /></span><p className="mt-4 font-bold">Your stash is empty</p><p className="muted mt-1 text-sm">Save your first useful resource to get started.</p><Link href="/dashboard/bookmarks?new=true" className="mt-4 inline-flex rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white">Add your first bookmark</Link></div></div>}</section>
   </>;
 }
 
 function DashboardSkeleton() {
-  return <div className="space-y-7"><div className="h-20 animate-pulse rounded-2xl bg-[var(--panel)]" /><div className="grid gap-4 sm:grid-cols-3">{[1, 2, 3].map(item => <div key={item} className="h-32 animate-pulse rounded-2xl bg-[var(--panel)]" />)}</div><div className="h-64 animate-pulse rounded-2xl bg-[var(--panel)]" /></div>;
+  return <div className="space-y-7"><div className="h-20 animate-pulse rounded-3xl bg-[var(--panel)]" /><div className="grid gap-4 sm:grid-cols-3">{[1, 2, 3].map(item => <div key={item} className="h-32 animate-pulse rounded-3xl bg-[var(--panel)]" />)}</div><div className="h-64 animate-pulse rounded-3xl bg-[var(--panel)]" /></div>;
 }
 
 export default function Dashboard() {

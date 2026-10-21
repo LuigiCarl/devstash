@@ -22,9 +22,10 @@ export function BookmarkCard({ item, onFavorite, onEdit, onDelete }: {
     catch { return item.url; }
   })();
 
-  return <article className="panel group flex min-h-60 flex-col rounded-2xl p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/5">
+  return <article className="panel group relative flex min-h-64 flex-col overflow-hidden rounded-3xl p-5 transition duration-300 hover:-translate-y-1 hover:border-indigo-300/70 hover:shadow-xl hover:shadow-indigo-950/5 dark:hover:border-indigo-500/30">
+    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-400/50 to-transparent opacity-0 transition group-hover:opacity-100" />
     <div className="flex items-start justify-between">
-      <span className="grid size-11 place-items-center rounded-xl text-lg font-black" style={{ background: `#${item.brandColor ?? "6366F1"}20`, color: `#${item.brandColor ?? "6366F1"}` }}>
+      <span className="grid size-12 place-items-center rounded-2xl text-lg font-black shadow-sm" style={{ background: `#${item.brandColor ?? "6366F1"}20`, color: `#${item.brandColor ?? "6366F1"}` }}>
         <TechnologyIcon slug={item.technologySlug} name={item.technologyName ?? item.title} url={item.url} color={item.brandColor} />
       </span>
       <div className="flex gap-1">
@@ -34,7 +35,7 @@ export function BookmarkCard({ item, onFavorite, onEdit, onDelete }: {
       </div>
     </div>
     <div className="mt-4">
-      <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-base font-semibold hover:text-[var(--accent)]">{item.title}<ExternalLink size={14} className="opacity-0 transition group-hover:opacity-100" /></a>
+      <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-base font-bold tracking-tight hover:text-[var(--accent)]">{item.title}<ExternalLink size={14} className="opacity-0 transition group-hover:opacity-100" /></a>
       <p className="muted mt-1 text-xs">{host}</p>
       {item.description && <p className="muted mt-2 line-clamp-2 text-sm leading-6">{item.description}</p>}
     </div>

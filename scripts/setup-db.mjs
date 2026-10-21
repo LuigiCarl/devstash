@@ -10,6 +10,9 @@ const sql = neon(env.DATABASE_URL);
 
 await sql.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto`);
 await sql.query(`CREATE TABLE IF NOT EXISTS users (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), name text, email text NOT NULL UNIQUE, email_verified timestamp, image text, created_at timestamp NOT NULL DEFAULT now())`);
+await sql.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS username text`);
+await sql.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash text`);
+await sql.query(`CREATE UNIQUE INDEX IF NOT EXISTS users_username_unique ON users(lower(username)) WHERE username IS NOT NULL`);
 await sql.query(`CREATE TABLE IF NOT EXISTS accounts (user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE, type text NOT NULL, provider text NOT NULL, provider_account_id text NOT NULL, refresh_token text, access_token text, expires_at integer, token_type text, scope text, id_token text, session_state text, PRIMARY KEY(provider, provider_account_id))`);
 await sql.query(`CREATE TABLE IF NOT EXISTS sessions (session_token text PRIMARY KEY, user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE, expires timestamp NOT NULL)`);
 await sql.query(`CREATE TABLE IF NOT EXISTS verification_tokens (identifier text NOT NULL, token text NOT NULL, expires timestamp NOT NULL, PRIMARY KEY(identifier, token))`);
