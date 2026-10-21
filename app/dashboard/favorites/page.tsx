@@ -6,8 +6,10 @@ import { db } from "@/lib/db";
 import { bookmarks, technologies } from "@/lib/db/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { Suspense } from "react";
+import { connection } from "next/server";
 
 async function FavoritesContent() {
+  await connection();
   const actor = await getActor();
   if (!actor) return null;
   const items = await db.select({ id: bookmarks.id, title: bookmarks.title, url: bookmarks.url, description: bookmarks.description, category: bookmarks.category, isFavorite: bookmarks.isFavorite, createdAt: bookmarks.createdAt, technologyId: bookmarks.technologyId, technologyName: technologies.name, technologySlug: technologies.slug, brandColor: technologies.brandColor }).from(bookmarks).leftJoin(technologies, eq(bookmarks.technologyId, technologies.id)).where(and(bookmarkOwner(actor), eq(bookmarks.isFavorite, true))).orderBy(desc(bookmarks.createdAt));

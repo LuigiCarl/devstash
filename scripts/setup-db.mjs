@@ -37,6 +37,23 @@ await sql.query(`DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE co
 await sql.query(`DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='collections_one_owner') THEN ALTER TABLE collections ADD CONSTRAINT collections_one_owner CHECK ((user_id IS NOT NULL) <> (guest_id IS NOT NULL)); END IF; END $$`);
 await sql.query(`DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='tags_one_owner') THEN ALTER TABLE tags ADD CONSTRAINT tags_one_owner CHECK ((user_id IS NOT NULL) <> (guest_id IS NOT NULL)); END IF; END $$`);
 
+// Merge legacy duplicate tags before enforcing one case-insensitive name per workspace.
+await sql.query(`WITH ranked AS (
+  SELECT id, first_value(id) OVER (PARTITION BY user_id, guest_id, lower(name) ORDER BY id) AS keep_id,
+    row_number() OVER (PARTITION BY user_id, guest_id, lower(name) ORDER BY id) AS position
+  FROM tags
+) INSERT INTO bookmark_tags(bookmark_id, tag_id)
+  SELECT bt.bookmark_id, ranked.keep_id FROM bookmark_tags bt JOIN ranked ON ranked.id = bt.tag_id
+  WHERE ranked.position > 1 ON CONFLICT DO NOTHING`);
+await sql.query(`WITH ranked AS (
+  SELECT id, row_number() OVER (PARTITION BY user_id, guest_id, lower(name) ORDER BY id) AS position FROM tags
+) DELETE FROM bookmark_tags USING ranked WHERE bookmark_tags.tag_id = ranked.id AND ranked.position > 1`);
+await sql.query(`WITH ranked AS (
+  SELECT id, row_number() OVER (PARTITION BY user_id, guest_id, lower(name) ORDER BY id) AS position FROM tags
+) DELETE FROM tags USING ranked WHERE tags.id = ranked.id AND ranked.position > 1`);
+await sql.query(`CREATE UNIQUE INDEX IF NOT EXISTS tags_user_name_unique ON tags(user_id, lower(name)) WHERE user_id IS NOT NULL`);
+await sql.query(`CREATE UNIQUE INDEX IF NOT EXISTS tags_guest_name_unique ON tags(guest_id, lower(name)) WHERE guest_id IS NOT NULL`);
+
 const technologies = [
   ["React","react","react","61DAFB","Frontend"],["Next.js","nextjs","nextdotjs","000000","Frontend"],["Vue","vue","vuedotjs","4FC08D","Frontend"],["Angular","angular","angular","DD0031","Frontend"],["Svelte","svelte","svelte","FF3E00","Frontend"],["JavaScript","javascript","javascript","F7DF1E","Language"],["TypeScript","typescript","typescript","3178C6","Language"],["Tailwind CSS","tailwind-css","tailwindcss","06B6D4","Frontend"],["Node.js","nodejs","nodedotjs","5FA04E","Backend"],["Python","python","python","3776AB","Backend"],["PostgreSQL","postgresql","postgresql","4169E1","Database"],["MySQL","mysql","mysql","4479A1","Database"],["MongoDB","mongodb","mongodb","47A248","Database"],["Redis","redis","redis","FF4438","Database"],["Git","git","git","F05032","Tool"],["GitHub","github","github","181717","Platform"],["Docker","docker","docker","2496ED","Tool"],["Vercel","vercel","vercel","000000","Platform"],["AWS","aws","amazonwebservices","232F3E","Platform"],["Figma","figma","figma","F24E1E","Design"]
 ];

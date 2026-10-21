@@ -1,1 +1,8 @@
-import {Boxes} from "lucide-react"; export function Logo({compact=false}:{compact?:boolean}){return <div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"><Boxes size={19}/></span>{!compact&&<span className="text-lg font-bold tracking-tight">DevStash</span>}</div>}
+import Image from "next/image";
+
+export function Logo({ compact = false }: { compact?: boolean }) {
+  return <div className="flex items-center gap-2.5" aria-label={compact ? "DevStash" : undefined}>
+    <Image src="/devstashlogo.png" alt={compact ? "DevStash" : ""} width={42} height={42} priority className="size-10 shrink-0 object-contain drop-shadow-[0_6px_12px_rgba(109,40,217,.28)]" />
+    {!compact && <span className="text-lg font-bold tracking-tight">DevStash</span>}
+  </div>;
+}

@@ -4,6 +4,7 @@ import { GUEST_COOKIE, hashGuestToken } from "@/lib/auth/actor";
 import { cookies } from "next/headers";
 import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
 
 export async function POST(request:Request){
   const token=randomBytes(32).toString("base64url");
@@ -14,6 +15,9 @@ export async function POST(request:Request){
 }
 
 export async function DELETE(){
-  (await cookies()).delete(GUEST_COOKIE);
+  const cookieStore=await cookies();
+  const token=cookieStore.get(GUEST_COOKIE)?.value;
+  if(token)await db.delete(guestSessions).where(eq(guestSessions.tokenHash,hashGuestToken(token)));
+  cookieStore.delete(GUEST_COOKIE);
   return Response.json({ok:true});
 }

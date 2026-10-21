@@ -7,10 +7,12 @@ import { and, desc, eq } from "drizzle-orm";
 import { PageHeading } from "@/components/page-heading";
 import { CollectionDetail } from "@/components/collection-detail";
 import { Suspense } from "react";
+import { connection } from "next/server";
 
 const fields = { id: bookmarks.id, title: bookmarks.title, url: bookmarks.url, description: bookmarks.description, category: bookmarks.category, isFavorite: bookmarks.isFavorite, createdAt: bookmarks.createdAt, technologyName: technologies.name, technologySlug: technologies.slug, brandColor: technologies.brandColor };
 
 async function CollectionContent({ params }: { params: PageProps<"/dashboard/collections/[id]">["params"] }) {
+  await connection();
   const actor = await getActor();
   if (!actor) return null;
   const { id } = await params;

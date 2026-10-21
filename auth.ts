@@ -13,5 +13,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   }),
   session: { strategy: "database" },
   providers: [Google],
-  pages: { signIn: "/login" },
+  pages: { signIn: "/login", error: "/login" },
+  trustHost: true,
 });
