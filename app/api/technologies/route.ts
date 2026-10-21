@@ -1,0 +1,1 @@
+import { db } from "@/lib/db";import{technologies}from"@/lib/db/schema";import{asc}from"drizzle-orm";export async function GET(){return Response.json({data:await db.select().from(technologies).orderBy(asc(technologies.name))})}

@@ -1,14 +1,12 @@
-import { auth } from "@/auth";
+import { getActor } from "@/lib/auth/actor";
 import { DashboardShell } from "@/components/dashboard-shell";
-import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 async function AuthenticatedDashboard({children}:{children:React.ReactNode}){
-  await connection();
-  const session = await auth();
-  if (!session?.user) redirect("/login");
-  return <DashboardShell user={session.user}>{children}</DashboardShell>;
+  const actor = await getActor();
+  if (!actor) redirect("/login");
+  return <DashboardShell user={actor}>{children}</DashboardShell>;
 }
 
 function DashboardFallback(){
