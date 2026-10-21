@@ -1,0 +1,1 @@
+import {Boxes} from "lucide-react"; export function Logo({compact=false}:{compact?:boolean}){return <div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"><Boxes size={19}/></span>{!compact&&<span className="text-lg font-bold tracking-tight">DevStash</span>}</div>}
