@@ -1,0 +1,5 @@
+import type { SimpleIcon } from "simple-icons";
+import { siReact,siNextdotjs,siVuedotjs,siAngular,siSvelte,siJavascript,siTypescript,siTailwindcss,siNodedotjs,siPython,siPostgresql,siMysql,siMongodb,siRedis,siGit,siGithub,siDocker,siVercel,siFigma } from "simple-icons/icons";
+
+const icons:Record<string,SimpleIcon>={react:siReact,nextjs:siNextdotjs,vue:siVuedotjs,angular:siAngular,svelte:siSvelte,javascript:siJavascript,typescript:siTypescript,"tailwind-css":siTailwindcss,nodejs:siNodedotjs,python:siPython,postgresql:siPostgresql,mysql:siMysql,mongodb:siMongodb,redis:siRedis,git:siGit,github:siGithub,docker:siDocker,vercel:siVercel,figma:siFigma};
+export function TechnologyIcon({slug,name,color,size=22}:{slug:string|null;name:string|null;color:string|null;size?:number}){const icon=slug?icons[slug]:undefined;if(!icon)return <span aria-label={name??"Resource"} className="font-bold">{(name??"R").slice(0,1).toUpperCase()}</span>;return <svg role="img" aria-label={`${name??icon.title} logo`} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" style={{color:`#${color??icon.hex}`}}><path d={icon.path}/></svg>}
