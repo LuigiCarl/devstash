@@ -22,10 +22,13 @@ export function BookmarkCard({ item, onFavorite, onEdit, onDelete }: {
     catch { return item.url; }
   })();
 
+  const rawColor = (item.brandColor ?? "6366F1").replace("#", "");
+  const isDarkMono = ["000000", "181717", "111111", "0b0b0b", "000"].includes(rawColor.toLowerCase());
+
   return <article className="panel group relative flex min-h-64 flex-col overflow-hidden rounded-3xl p-5 transition duration-300 hover:-translate-y-1 hover:border-indigo-300/70 hover:shadow-xl hover:shadow-indigo-950/5 dark:hover:border-indigo-500/30">
     <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-400/50 to-transparent opacity-0 transition group-hover:opacity-100" />
     <div className="flex items-start justify-between">
-      <span className="grid size-12 place-items-center rounded-2xl text-lg font-black shadow-sm" style={{ background: `#${item.brandColor ?? "6366F1"}20`, color: `#${item.brandColor ?? "6366F1"}` }}>
+      <span className={`grid size-12 place-items-center rounded-2xl text-lg font-black shadow-sm ${isDarkMono ? "bg-slate-900/10 text-slate-950 dark:bg-white/10 dark:text-white" : ""}`} style={!isDarkMono ? { background: `#${rawColor}20`, color: `#${rawColor}` } : undefined}>
         <TechnologyIcon slug={item.technologySlug} name={item.technologyName ?? item.title} url={item.url} color={item.brandColor} />
       </span>
       <div className="flex gap-1">

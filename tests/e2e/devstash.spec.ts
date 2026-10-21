@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 async function enterGuest(page: Page) {
   await page.goto("/login");
-  await page.getByRole("button", { name: "Continue as guest" }).click();
+  await page.getByRole("button", { name: /guest/i }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
   await expect(page.getByRole("link", { name: "Bookmarks" })).toBeVisible({ timeout: 15_000 });
 }
@@ -75,5 +75,32 @@ test.describe("guest workspace", () => {
     expect((await favoritePatch).status()).toBe(200);
     await page.reload();
     await expect(page.getByRole("link", { name: title })).toHaveCount(0);
+  });
+
+  test("toggles light and dark themes through header and settings", async ({ page }) => {
+    await enterGuest(page);
+    const headerToggle = page.getByRole("button", { name: "Toggle theme" });
+    await expect(headerToggle).toBeVisible();
+
+    // Toggle from default dark to light
+    await headerToggle.click();
+    await expect(page.locator("html")).toHaveClass(/light/);
+
+    // Toggle back to dark
+    await headerToggle.click();
+    await expect(page.locator("html")).toHaveClass(/dark/);
+
+    // Navigate to settings and toggle via Appearance buttons
+    await page.getByRole("link", { name: "Settings" }).click();
+    await expect(page).toHaveURL(/\/dashboard\/settings$/);
+
+    const lightBtn = page.getByRole("button", { name: "Light" });
+    const darkBtn = page.getByRole("button", { name: "Dark" });
+
+    await lightBtn.click();
+    await expect(page.locator("html")).toHaveClass(/light/);
+
+    await darkBtn.click();
+    await expect(page.locator("html")).toHaveClass(/dark/);
   });
 });

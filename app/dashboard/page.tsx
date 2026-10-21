@@ -22,9 +22,9 @@ async function DashboardContent() {
     db.select({ id: bookmarks.id, title: bookmarks.title, url: bookmarks.url, description: bookmarks.description, category: bookmarks.category, isFavorite: bookmarks.isFavorite, createdAt: bookmarks.createdAt, technologyName: technologies.name, technologySlug: technologies.slug, brandColor: technologies.brandColor }).from(bookmarks).leftJoin(technologies, eq(bookmarks.technologyId, technologies.id)).where(bookmarkOwner(actor)).orderBy(desc(bookmarks.createdAt)).limit(3),
   ]);
   const stats = [
-    { label: "Total bookmarks", value: all.value, icon: Bookmark, color: "text-indigo-600 bg-indigo-500/10", glow: "from-indigo-500/10" },
-    { label: "Favorites", value: favorites.value, icon: Heart, color: "text-rose-600 bg-rose-500/10", glow: "from-rose-500/10" },
-    { label: "Collections", value: collectionCount.value, icon: Folder, color: "text-amber-600 bg-amber-500/10", glow: "from-amber-500/10" },
+    { label: "Total bookmarks", value: all.value, icon: Bookmark, color: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10", glow: "from-indigo-500/10" },
+    { label: "Favorites", value: favorites.value, icon: Heart, color: "text-rose-600 dark:text-rose-400 bg-rose-500/10", glow: "from-rose-500/10" },
+    { label: "Collections", value: collectionCount.value, icon: Folder, color: "text-amber-600 dark:text-amber-400 bg-amber-500/10", glow: "from-amber-500/10" },
   ];
 
   return <>

@@ -1,12 +1,12 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark,.dark *));
 
-:root{--bg:#f5f6fb;--panel:#fff;--text:#111525;--muted:#69728a;--line:#e3e6ef;--accent:#6254e8;--soft:#eeecff}
-.dark{--bg:#090d18;--panel:#111726;--text:#f6f7fb;--muted:#929bb1;--line:#252c3d;--accent:#8b82ff;--soft:#1e2043}
+:root{--bg:#f5f6fb;--panel:#fff;--text:#111525;--muted:#69728a;--line:#e3e6ef;--accent:#6254e8;--soft:#eeecff;color-scheme:light}
+.dark{--bg:#090d18;--panel:#111726;--text:#f6f7fb;--muted:#929bb1;--line:#252c3d;--accent:#8b82ff;--soft:#1e2043;color-scheme:dark}
 *{box-sizing:border-box}
 html{background:var(--bg);scroll-behavior:smooth}
 body{margin:0;overflow-x:hidden;background:var(--bg);color:var(--text);font-family:Geist,"Segoe UI",Arial,sans-serif}
-button,input,select,textarea{font:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
 button,a{-webkit-tap-highlight-color:transparent}
 button{cursor:pointer}
 ::selection{background:#7065e8;color:white}

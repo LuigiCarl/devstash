@@ -131,7 +131,7 @@ export default function Bookmarks() {
     <form onSubmit={submitSearch} className="panel mb-5 grid gap-3 rounded-2xl p-3 sm:grid-cols-2 lg:grid-cols-4">
       <div className="flex items-center lg:col-span-2">
         <Search className="muted mx-2" size={17} />
-        <input value={filters.q} onChange={event => setFilters(value => ({ ...value, q: event.target.value }))} className="h-10 min-w-0 flex-1 bg-transparent outline-none" placeholder="Search title, URL, or description..." aria-label="Search bookmarks" />
+        <input value={filters.q} onChange={event => setFilters(value => ({ ...value, q: event.target.value }))} className="h-10 min-w-0 flex-1 bg-transparent text-[var(--text)] outline-none" placeholder="Search title, URL, or description..." aria-label="Search bookmarks" />
         {filters.q && <button type="button" onClick={() => update({ q: "", page: 1 })} aria-label="Clear search" className="muted mr-2 rounded-md p-1 hover:bg-[var(--soft)]"><X size={16} /></button>}
       </div>
       <select value={filters.technology} onChange={e => update({ technology: e.target.value, page: 1 })} aria-label="Filter by technology" className="rounded-xl border border-[var(--line)] bg-[var(--panel)] px-3 text-sm"><option value="">All technologies</option>{technologies.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select>

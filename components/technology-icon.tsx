@@ -80,5 +80,8 @@ export function TechnologyIcon({ slug, name, url, color, size = 22 }: {
     return <img src={faviconUrl} alt={`${name ?? "Website"} favicon`} width={size} height={size} className="rounded-sm object-contain" referrerPolicy="no-referrer" onError={() => setFailedFavicon(faviconUrl)} />;
   }
   if (!icon) return <span aria-label={name ?? "Resource"} className="font-bold">{(name ?? "R").slice(0, 1).toUpperCase()}</span>;
-  return <svg role="img" aria-label={`${name ?? icon.title} logo`} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" style={{ color: `#${color ?? icon.hex}` }}><path d={icon.path} /></svg>;
+  const rawHex = (color ?? icon.hex).replace("#", "");
+  const isDarkMono = ["000000", "181717", "111111", "0b0b0b", "000"].includes(rawHex.toLowerCase());
+
+  return <svg role="img" aria-label={`${name ?? icon.title} logo`} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={isDarkMono ? "text-slate-950 dark:text-white" : undefined} style={!isDarkMono ? { color: `#${rawHex}` } : undefined}><path d={icon.path} /></svg>;
 }
