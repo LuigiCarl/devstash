@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Plus, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { BookmarkCard, type BookmarkItem } from "@/components/bookmark-card";
 import { PageHeading } from "@/components/page-heading";
 import { toast } from "sonner";
@@ -53,6 +53,7 @@ export default function Bookmarks() {
   const [filters, setFilters] = useState<Filters>(() => typeof window === "undefined" ? defaultFilters : readFilters()), [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, pageSize: 12, total: 0, totalPages: 1 }), [editing, setEditing] = useState<BookmarkItem | null>(null);
   const [dialog, setDialog] = useState<"bookmark" | "tag" | "delete" | null>(null), [deleteTarget, setDeleteTarget] = useState<BookmarkItem | null>(null);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   async function load(next: Filters) {
     setLoading(true);
@@ -127,19 +128,179 @@ export default function Bookmarks() {
     page === 1 || page === pagination.totalPages || Math.abs(page - pagination.page) <= 1
   );
 
-  return <><PageHeading title="Bookmarks" description={`${pagination.total} resources in your stash.`} action={<button onClick={() => { setEditing(null); setDialog("bookmark"); }} className="flex h-10 items-center gap-2 rounded-xl bg-indigo-600 px-4 text-sm font-semibold text-white"><Plus size={17} />Add bookmark</button>} />
-    <form onSubmit={submitSearch} className="panel mb-5 grid gap-3 rounded-2xl p-3 sm:grid-cols-2 lg:grid-cols-4">
-      <div className="flex items-center lg:col-span-2">
-        <Search className="muted mx-2" size={17} />
-        <input value={filters.q} onChange={event => setFilters(value => ({ ...value, q: event.target.value }))} className="h-10 min-w-0 flex-1 bg-transparent text-[var(--text)] outline-none" placeholder="Search title, URL, or description..." aria-label="Search bookmarks" />
-        {filters.q && <button type="button" onClick={() => update({ q: "", page: 1 })} aria-label="Clear search" className="muted mr-2 rounded-md p-1 hover:bg-[var(--soft)]"><X size={16} /></button>}
+  const activeFilterCount = [
+    Boolean(filters.technology),
+    Boolean(filters.category),
+    Boolean(filters.tag),
+    Boolean(filters.favorite),
+    filters.sort !== "newest",
+  ].filter(Boolean).length;
+
+  return <><PageHeading title="Bookmarks" description={`${pagination.total} resources in your stash.`} action={<button onClick={() => { setEditing(null); setDialog("bookmark"); }} className="flex h-9 sm:h-10 items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-indigo-600 px-3.5 sm:px-4 text-xs sm:text-sm font-semibold text-white transition hover:bg-indigo-500"><Plus size={16} />Add bookmark</button>} />
+    <form onSubmit={submitSearch} className="panel mb-5 space-y-2.5 rounded-2xl p-2.5 sm:space-y-3 sm:p-3.5">
+      <div className="flex items-center gap-2">
+        <div className="flex flex-1 items-center rounded-xl border border-[var(--line)] bg-[var(--panel)] px-2 sm:border-0 sm:bg-transparent">
+          <Search className="muted mx-1 shrink-0" size={17} />
+          <input
+            value={filters.q}
+            onChange={event => setFilters(value => ({ ...value, q: event.target.value }))}
+            className="h-9 sm:h-10 min-w-0 flex-1 bg-transparent text-xs sm:text-sm text-[var(--text)] outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            placeholder="Search title, URL, or description..."
+            aria-label="Search bookmarks"
+          />
+          {filters.q && (
+            <button
+              type="button"
+              onClick={() => update({ q: "", page: 1 })}
+              aria-label="Clear search"
+              className="muted mr-1 rounded-md p-1 hover:bg-[var(--soft)]"
+            >
+              <X size={15} />
+            </button>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowMobileFilters(value => !value)}
+          className={`flex h-9 sm:h-10 items-center gap-1.5 rounded-xl border px-3 text-xs font-semibold transition sm:hidden ${
+            activeFilterCount > 0
+              ? "border-indigo-500/50 bg-indigo-500/10 text-indigo-500 dark:text-indigo-400"
+              : "border-[var(--line)] bg-[var(--panel)] text-slate-600 dark:text-slate-300"
+          }`}
+          aria-label="Toggle filters"
+        >
+          <SlidersHorizontal size={14} />
+          <span>Filters</span>
+          {activeFilterCount > 0 && (
+            <span className="grid size-4 place-items-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+        <button
+          type="submit"
+          className="hidden rounded-xl bg-[var(--soft)] px-4 text-sm font-semibold text-[var(--accent)] sm:block"
+        >
+          Search
+        </button>
       </div>
-      <select value={filters.technology} onChange={e => update({ technology: e.target.value, page: 1 })} aria-label="Filter by technology" className="rounded-xl border border-[var(--line)] bg-[var(--panel)] px-3 text-sm"><option value="">All technologies</option>{technologies.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
-      <select value={filters.category} onChange={e => update({ category: e.target.value, page: 1 })} aria-label="Filter by category" className="rounded-xl border border-[var(--line)] bg-[var(--panel)] px-3 text-sm"><option value="">All categories</option>{categories.map(category => <option key={category}>{category}</option>)}</select>
-      <select value={filters.tag} onChange={e => update({ tag: e.target.value, page: 1 })} aria-label="Filter by tag" className="rounded-xl border border-[var(--line)] bg-[var(--panel)] px-3 text-sm"><option value="">All tags</option>{tags.map(tag => <option key={tag.id} value={tag.id}>#{tag.name}</option>)}</select>
-      <select value={filters.favorite} onChange={e => update({ favorite: e.target.value, page: 1 })} aria-label="Filter by favorite status" className="rounded-xl border border-[var(--line)] bg-[var(--panel)] px-3 text-sm"><option value="">All bookmarks</option><option value="true">Favorites only</option></select>
-      <select value={filters.sort} onChange={e => update({ sort: e.target.value, page: 1 })} aria-label="Sort bookmarks" className="rounded-xl border border-[var(--line)] bg-[var(--panel)] px-3 text-sm"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="title">Title A-Z</option></select>
-      <button className="rounded-xl bg-[var(--soft)] px-4 text-sm font-semibold text-[var(--accent)]">Search</button>
+
+      <div
+        className={`${
+          showMobileFilters ? "grid" : "hidden sm:grid"
+        } grid-cols-2 gap-2 border-t border-[var(--line)]/60 pt-2.5 sm:border-t-0 sm:pt-0 sm:grid-cols-2 lg:grid-cols-5`}
+      >
+        <select
+          value={filters.technology}
+          onChange={e => update({ technology: e.target.value, page: 1 })}
+          aria-label="Filter by technology"
+          className="h-9 sm:h-10 rounded-xl border border-[var(--line)] bg-[var(--panel)] px-2 text-xs sm:text-sm"
+        >
+          <option value="">All technologies</option>
+          {technologies.map(t => (
+            <option key={t.id} value={t.id}>{t.name}</option>
+          ))}
+        </select>
+        <select
+          value={filters.category}
+          onChange={e => update({ category: e.target.value, page: 1 })}
+          aria-label="Filter by category"
+          className="h-9 sm:h-10 rounded-xl border border-[var(--line)] bg-[var(--panel)] px-2 text-xs sm:text-sm"
+        >
+          <option value="">All categories</option>
+          {categories.map(category => (
+            <option key={category}>{category}</option>
+          ))}
+        </select>
+        <select
+          value={filters.tag}
+          onChange={e => update({ tag: e.target.value, page: 1 })}
+          aria-label="Filter by tag"
+          className="h-9 sm:h-10 rounded-xl border border-[var(--line)] bg-[var(--panel)] px-2 text-xs sm:text-sm"
+        >
+          <option value="">All tags</option>
+          {tags.map(tag => (
+            <option key={tag.id} value={tag.id}>#{tag.name}</option>
+          ))}
+        </select>
+        <select
+          value={filters.favorite}
+          onChange={e => update({ favorite: e.target.value, page: 1 })}
+          aria-label="Filter by favorite status"
+          className="h-9 sm:h-10 rounded-xl border border-[var(--line)] bg-[var(--panel)] px-2 text-xs sm:text-sm"
+        >
+          <option value="">All bookmarks</option>
+          <option value="true">Favorites only</option>
+        </select>
+        <select
+          value={filters.sort}
+          onChange={e => update({ sort: e.target.value, page: 1 })}
+          aria-label="Sort bookmarks"
+          className="h-9 sm:h-10 rounded-xl border border-[var(--line)] bg-[var(--panel)] px-2 text-xs sm:text-sm col-span-2 sm:col-span-1"
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="title">Title A-Z</option>
+        </select>
+      </div>
+
+      {activeFilterCount > 0 && !showMobileFilters && (
+        <div className="flex flex-wrap items-center gap-1.5 pt-1 sm:hidden">
+          <span className="text-[11px] font-medium text-slate-500">Active:</span>
+          {filters.technology && (
+            <button
+              type="button"
+              onClick={() => update({ technology: "", page: 1 })}
+              className="inline-flex items-center gap-1 rounded-lg bg-indigo-500/10 px-2 py-0.5 text-[11px] font-medium text-indigo-400"
+            >
+              Tech: {technologies.find(t => t.id === filters.technology)?.name ?? "selected"} <X size={11} />
+            </button>
+          )}
+          {filters.category && (
+            <button
+              type="button"
+              onClick={() => update({ category: "", page: 1 })}
+              className="inline-flex items-center gap-1 rounded-lg bg-indigo-500/10 px-2 py-0.5 text-[11px] font-medium text-indigo-400"
+            >
+              {filters.category} <X size={11} />
+            </button>
+          )}
+          {filters.tag && (
+            <button
+              type="button"
+              onClick={() => update({ tag: "", page: 1 })}
+              className="inline-flex items-center gap-1 rounded-lg bg-indigo-500/10 px-2 py-0.5 text-[11px] font-medium text-indigo-400"
+            >
+              #{tags.find(t => t.id === filters.tag)?.name ?? "tag"} <X size={11} />
+            </button>
+          )}
+          {filters.favorite === "true" && (
+            <button
+              type="button"
+              onClick={() => update({ favorite: "", page: 1 })}
+              className="inline-flex items-center gap-1 rounded-lg bg-rose-500/10 px-2 py-0.5 text-[11px] font-medium text-rose-400"
+            >
+              Favorites <X size={11} />
+            </button>
+          )}
+          {filters.sort !== "newest" && (
+            <button
+              type="button"
+              onClick={() => update({ sort: "newest", page: 1 })}
+              className="inline-flex items-center gap-1 rounded-lg bg-slate-500/10 px-2 py-0.5 text-[11px] font-medium text-slate-400"
+            >
+              Sort: {filters.sort} <X size={11} />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => update({ technology: "", category: "", tag: "", favorite: "", sort: "newest", page: 1 })}
+            className="text-[11px] underline text-slate-500 hover:text-slate-300 ml-1"
+          >
+            Clear
+          </button>
+        </div>
+      )}
     </form>
     {loading ? <div className="h-64 animate-pulse rounded-2xl bg-[var(--panel)]" /> : items.length ? <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{items.map(item => <BookmarkCard key={item.id} item={item} onFavorite={favorite} onEdit={value => { setEditing(value); setDialog("bookmark"); }} onDelete={value => { setDeleteTarget(value); setDialog("delete"); }} />)}</div> : <div className="panel grid h-64 place-items-center rounded-2xl muted">No bookmarks found.</div>}
     {!loading && pagination.total > 0 && <div className="mt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
