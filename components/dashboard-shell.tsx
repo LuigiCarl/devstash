@@ -38,8 +38,8 @@ export function DashboardShell({ children, user }: { children: React.ReactNode; 
       if (active) setTags(result.data ?? []);
     }
     void loadTags();
-    window.addEventListener("devstash:tags-changed", loadTags);
-    return () => { active = false; window.removeEventListener("devstash:tags-changed", loadTags); };
+    window.addEventListener("devtash:tags-changed", loadTags);
+    return () => { active = false; window.removeEventListener("devtash:tags-changed", loadTags); };
   }, []);
 
   function submitSearch(event: FormEvent) {

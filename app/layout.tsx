@@ -4,7 +4,7 @@ import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "DevStash", template: "%s · DevStash" },
+  title: { default: "DevTash", template: "%s · DevTash" },
   description: "Your developer resources, organized in one place.",
 };
 

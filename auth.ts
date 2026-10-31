@@ -46,7 +46,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   cookies: {
     sessionToken: {
-      name: process.env.NODE_ENV === "production" ? "__Secure-devstash.session-token.v2" : "devstash.session-token.v2",
+      name: process.env.NODE_ENV === "production" ? "__Secure-devtash.session-token.v2" : "devtash.session-token.v2",
       options: { httpOnly: true, sameSite: "lax", path: "/", secure: process.env.NODE_ENV === "production" },
     },
   },

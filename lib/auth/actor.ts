@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { bookmarks, collections, guestSessions, tags, users } from "@/lib/db/schema";
 
-export const GUEST_COOKIE = "devstash_guest";
+export const GUEST_COOKIE = "devtash_guest";
 export type Actor = { kind: "user"; id: string; name: string | null; email: string | null; image: string | null } | { kind: "guest"; id: string; name: "Guest"; email: null; image: null };
 export const hashGuestToken = (token: string) => createHash("sha256").update(token).digest("hex");
 

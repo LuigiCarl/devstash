@@ -1,4 +1,4 @@
-# DevStash 🔖
+# DevTash 🔖
 
 > **A high-performance, developer-first bookmark and resource manager built with Next.js 16, TypeScript, Tailwind CSS, Drizzle ORM, Neon PostgreSQL, and Auth.js.**
 
@@ -38,9 +38,9 @@
 
 Developers constantly discover high-value documentation, cheat sheets, GitHub repositories, tools, design resources, and tutorials. When scattered across browser bookmarks, Discord messages, or random notes, they get lost and forgotten.
 
-**DevStash** solves this problem by providing a central, lightning-fast developer command center to save, categorize, tag, and discover resources.
+**DevTash** solves this problem by providing a central, lightning-fast developer command center to save, categorize, tag, and discover resources.
 
-### Why DevStash?
+### Why DevTash?
 - **Developer-Native**: Categorized by actual programming languages, frameworks, and tools with official brand icons.
 - **Multi-Level Organization**: Filter by technology, assign custom user tags, and group resources into distinct collections.
 - **Zero Friction**: Test drive immediately in **Guest Workspace** mode with full persistence; easily migrate guest data into an authenticated account later.
@@ -107,7 +107,7 @@ Developers constantly discover high-value documentation, cheat sheets, GitHub re
 
 ## 🏗 Architecture & Database Design
 
-DevStash uses a monolithic full-stack architecture built inside Next.js. Server Components handle initial data fetching directly against Neon via Drizzle ORM, while Client Components handle interactivity, modals, and filters.
+DevTash uses a monolithic full-stack architecture built inside Next.js. Server Components handle initial data fetching directly against Neon via Drizzle ORM, while Client Components handle interactivity, modals, and filters.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -237,7 +237,7 @@ erDiagram
 
 ## ⚡ Quickstart (Local Development)
 
-Follow these steps to run DevStash on your local machine:
+Follow these steps to run DevTash on your local machine:
 
 ### 1. Prerequisites
 - **Node.js**: `v20.x` or higher
@@ -248,8 +248,8 @@ Follow these steps to run DevStash on your local machine:
 ### 2. Clone and Install
 
 ```bash
-git clone https://github.com/your-username/devstash.git
-cd devstash
+git clone https://github.com/your-username/devtash.git
+cd devtash
 npm install
 ```
 
@@ -309,14 +309,14 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. You can cli
 
 ## 🐘 Connecting to Neon PostgreSQL
 
-DevStash uses `@neondatabase/serverless` and `drizzle-orm/neon-http`, optimized for serverless environments.
+DevTash uses `@neondatabase/serverless` and `drizzle-orm/neon-http`, optimized for serverless environments.
 
 You can connect to Neon in one of two ways:
 
 ### Method A: Standalone Neon Account (Direct)
 
 1. Sign up for a free account at [neon.tech](https://neon.tech).
-2. Click **Create Project**, name it (e.g., `devstash`), and choose the region closest to your Vercel deployment (e.g., `us-east-1` or `eu-central-1`).
+2. Click **Create Project**, name it (e.g., `devtash`), and choose the region closest to your Vercel deployment (e.g., `us-east-1` or `eu-central-1`).
 3. On the Neon Dashboard, copy your connection string from the **Connection Details** widget.
    - Make sure **Pooled connection** is checked (recommended for serverless).
    - The connection string will look like:
@@ -350,7 +350,7 @@ If deploying on Vercel, you can provision Neon directly from the Vercel dashboar
 
 ## 🚀 Deploying to Vercel
 
-Deploying DevStash to Vercel takes only a few minutes.
+Deploying DevTash to Vercel takes only a few minutes.
 
 ### Step 1: Push Code to GitHub
 
@@ -366,7 +366,7 @@ git push origin main
 
 1. Log in to [vercel.com](https://vercel.com).
 2. Click **Add New...** → **Project**.
-3. Select your `devstash` GitHub repository and click **Import**.
+3. Select your `devtash` GitHub repository and click **Import**.
 4. Framework preset: **Next.js** (detected automatically).
 5. Leave Build & Output settings at their defaults.
 
@@ -378,8 +378,8 @@ Before clicking Deploy, expand the **Environment Variables** section and add the
 | :--- | :--- | :--- |
 | `DATABASE_URL` | Neon PostgreSQL pooled connection string | `postgresql://user:pass@ep-xyz-pooler.neon.tech/neondb?sslmode=require` |
 | `AUTH_SECRET` | 32+ character random secret string | `npx auth secret` or random base64 string |
-| `AUTH_URL` | Your live Vercel production URL | `https://devstash-yourname.vercel.app` |
-| `NEXT_PUBLIC_APP_URL` | Your live Vercel production URL | `https://devstash-yourname.vercel.app` |
+| `AUTH_URL` | Your live Vercel production URL | `https://devtash-yourname.vercel.app` |
+| `NEXT_PUBLIC_APP_URL` | Your live Vercel production URL | `https://devtash-yourname.vercel.app` |
 | `AUTH_GOOGLE_ID` | Google OAuth Client ID | `123456789-abc.apps.googleusercontent.com` |
 | `AUTH_GOOGLE_SECRET` | Google OAuth Client Secret | `GOCSPX-xxxxxxxxxxxxxxxx` |
 | `OWNER_GOOGLE_EMAIL` | *(Optional)* Restrict Google login to your email | `you@gmail.com` |
@@ -422,13 +422,13 @@ To enable Google Sign-In with Auth.js:
 2. Create a new project or select an existing one.
 3. Navigate to **APIs & Services** → **OAuth consent screen**:
    - Choose **External** user type and click **Create**.
-   - Fill in **App name** (*DevStash*), **User support email**, and **Developer contact email**.
+   - Fill in **App name** (*DevTash*), **User support email**, and **Developer contact email**.
    - Under **Scopes**, ensure `.../auth/userinfo.email` and `.../auth/userinfo.profile` are included.
    - If in *Testing* status, add your Google account to **Test users**.
 4. Navigate to **APIs & Services** → **Credentials**:
    - Click **Create Credentials** → **OAuth client ID**.
    - Application type: **Web application**.
-   - Name: `DevStash Web Client`.
+   - Name: `DevTash Web Client`.
    - **Authorized JavaScript origins**:
      - `http://localhost:3000` (for local development)
      - `https://your-app.vercel.app` (for production)
@@ -442,7 +442,7 @@ To enable Google Sign-In with Auth.js:
 
 ## 🔐 Environment Variables
 
-Reference list of environment variables used across DevStash:
+Reference list of environment variables used across DevTash:
 
 ```env
 # -----------------------------------------------------------------------------
@@ -509,7 +509,7 @@ All bookmark, collection, tag, and account endpoints require an active session (
 
 ## 🧪 Testing
 
-DevStash includes automated testing suites for both unit validation and end-to-end browser journeys.
+DevTash includes automated testing suites for both unit validation and end-to-end browser journeys.
 
 ### Unit Tests (Vitest)
 
@@ -555,7 +555,7 @@ npx playwright show-report
 ## 📁 Project Structure
 
 ```text
-devstash/
+devtash/
 ├── app/                          # Next.js 16 App Router
 │   ├── (auth)/login/             # Sign-in page (Google, Credentials, Guest)
 │   ├── account-deletion/         # Account deletion disclosure page
@@ -651,7 +651,7 @@ devstash/
 - Other visitors or recruiters can still explore the app safely via **"Explore as guest"**.
 
 ### 5. Can guests convert their data into a permanent account?
-- **Yes!** When a guest visits `/login` and signs in with Google or creates a credentials account, DevStash detects their guest session token and automatically moves all their bookmarks, collections, and tags to their registered user record.
+- **Yes!** When a guest visits `/login` and signs in with Google or creates a credentials account, DevTash detects their guest session token and automatically moves all their bookmarks, collections, and tags to their registered user record.
 
 ---
 

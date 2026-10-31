@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       username,
       passwordHash,
       name: name ?? username,
-      email: `${randomUUID()}@local.devstash.invalid`,
+      email: `${randomUUID()}@local.devtash.invalid`,
     }).onConflictDoNothing().returning({ id: users.id });
 
     if (!created) return Response.json({ error: "Username is already taken." }, { status: 409 });

@@ -1,4 +1,4 @@
-# DevStash — Complete Project Development Plan
+# DevTash — Complete Project Development Plan
 
 Version 1.0 • Full-stack developer resource manager • Portfolio-ready • Vercel deployment
 
@@ -12,9 +12,9 @@ Version 1.0 • Full-stack developer resource manager • Portfolio-ready • Ve
 
 ## 1. Project overview
 
-DevStash is a personal developer resource management application where developers can save, organize, search, and revisit useful programming resources in one place.
+DevTash is a personal developer resource management application where developers can save, organize, search, and revisit useful programming resources in one place.
 
-Instead of having documentation, GitHub repositories, tutorials, and development tools scattered across browser bookmarks, DevStash provides a centralized library organized by technology, category, tags, and collections.
+Instead of having documentation, GitHub repositories, tutorials, and development tools scattered across browser bookmarks, DevTash provides a centralized library organized by technology, category, tags, and collections.
 
 PROJECT PROFILE
 
@@ -220,7 +220,7 @@ Google account information, theme preferences, and sign-out.
 
 ## 5. Visual design system
 
-DevStash should feel like a professional developer tool rather than a generic school project.
+DevTash should feel like a professional developer tool rather than a generic school project.
 
 Recommended design direction
 
@@ -268,7 +268,7 @@ In the actual application, prefer locally bundled icons from Simple Icons or Dev
 
 ## 6. System architecture
 
-DevStash will use a single Next.js application containing the frontend and backend. This is a monolithic full-stack architecture, which is appropriate for the project's size.
+DevTash will use a single Next.js application containing the frontend and backend. This is a monolithic full-stack architecture, which is appropriate for the project's size.
 
 Browser
 
@@ -408,7 +408,7 @@ Use consistent HTTP status codes: `401` for unauthenticated requests, `403` for 
 
 ## 9. Security and best practices
 
-These are important because DevStash uses real Google accounts and persistent user data.
+These are important because DevTash uses real Google accounts and persistent user data.
 
 Authentication
 
@@ -439,7 +439,7 @@ For a public deployment, also add reasonable rate limiting for write operations 
 ## 10. Project folder structure
 
 ```
-devstash/
+devtash/
 ├── src/
 │   ├── app/
 │   │   ├── (marketing)/
@@ -656,7 +656,7 @@ Write README and portfolio case study
 
 ## 14. Definition of done
 
-DevStash is portfolio-ready when:
+DevTash is portfolio-ready when:
 
 - A user can sign in with Google and access a private dashboard.
 - Bookmarks persist in Neon PostgreSQL after logout, refresh, and redeployment.
@@ -668,9 +668,9 @@ DevStash is portfolio-ready when:
 - Vercel production deployment is stable.
 - The repository contains setup instructions, an ERD, API documentation, screenshots, and a clear explanation of your contributions.
 
-## 15. How to present DevStash in your portfolio
+## 15. How to present DevTash in your portfolio
 
-DevStash
+DevTash
 
 Full-stack project
 
@@ -698,7 +698,7 @@ This is a proposed portfolio description; only publish it as a completed project
 
 | Decision         | Selected approach                      |
 | ---------------- | -------------------------------------- |
-| Project name     | DevStash                               |
+| Project name     | DevTash                               |
 | Application      | Personal developer bookmark manager    |
 | Deployment       | Vercel                                 |
 | Database         | Neon PostgreSQL via Vercel Marketplace |

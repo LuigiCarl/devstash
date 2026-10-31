@@ -353,13 +353,13 @@ export default function Bookmarks() {
     const name = String(data.get("name") ?? "").trim(); if (!name) return;
     const response = await fetch("/api/tags", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name }) }), result = await response.json();
     if (!response.ok) { toast.error(result.error ?? "Could not create tag"); return; }
-    setTags(value => [...value, result.data].sort((a, b) => a.name.localeCompare(b.name))); window.dispatchEvent(new Event("devstash:tags-changed")); setDialog("bookmark"); toast.success("Tag created");
+    setTags(value => [...value, result.data].sort((a, b) => a.name.localeCompare(b.name))); window.dispatchEvent(new Event("devtash:tags-changed")); setDialog("bookmark"); toast.success("Tag created");
   }
   async function deleteTag(tag: Tag) {
     const response = await fetch(`/api/tags/${tag.id}`, { method: "DELETE" });
     if (!response.ok) { const data = await response.json(); toast.error(data.error ?? "Could not delete tag"); return; }
     setTags(value => value.filter(item => item.id !== tag.id));
-    window.dispatchEvent(new Event("devstash:tags-changed"));
+    window.dispatchEvent(new Event("devtash:tags-changed"));
     if (filters.tag === tag.id) update({ tag: "", page: 1 });
     toast.success("Tag deleted");
   }
@@ -605,7 +605,7 @@ export default function Bookmarks() {
               return null;
             }
             setTags(value => [...value, result.data].sort((a, b) => a.name.localeCompare(b.name)));
-            window.dispatchEvent(new Event("devstash:tags-changed"));
+            window.dispatchEvent(new Event("devtash:tags-changed"));
             toast.success(`Tag #${trimmed} created`);
             return result.data;
           }}
