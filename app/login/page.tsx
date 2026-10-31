@@ -15,20 +15,20 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   const googleEnabled = Boolean(process.env.OWNER_GOOGLE_EMAIL);
   if (session?.user) redirect("/dashboard");
 
-  return <main className="grid min-h-screen lg:grid-cols-[.9fr_1.1fr]">
-    <section className="relative hidden overflow-hidden bg-[#090d1a] p-12 text-white lg:flex lg:flex-col xl:p-16">
+  return <main className="min-h-screen lg:grid lg:grid-cols-[.92fr_1.08fr]">
+    <section className="relative hidden bg-[#090d1a] p-8 text-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-between lg:overflow-y-auto lg:overflow-x-hidden lg:p-10 xl:p-14">
       <div className="pointer-events-none absolute -left-24 top-1/3 size-80 rounded-full bg-indigo-600/20 blur-3xl" />
       <div className="pointer-events-none absolute -right-24 bottom-10 size-72 rounded-full bg-violet-600/15 blur-3xl" />
-      <Link href="/"><Logo /></Link>
-      <div className="relative my-auto max-w-xl">
+      <div className="relative shrink-0"><Link href="/"><Logo /></Link></div>
+      <div className="relative my-auto max-w-xl py-6">
         <p className="text-xs font-bold uppercase tracking-[.24em] text-indigo-300">Your developer knowledge base</p>
-        <h1 className="mt-6 text-5xl font-bold leading-[1.08] tracking-tight xl:text-6xl">Less searching.<br /><span className="bg-gradient-to-r from-indigo-300 to-violet-400 bg-clip-text text-transparent">More building.</span></h1>
-        <p className="mt-7 max-w-lg text-lg leading-8 text-slate-400">Save the documentation, tools, and ideas worth keeping—organized and ready when you need them.</p>
-        <div className="mt-11 grid gap-3 text-sm text-slate-300">{["A private workspace for every account", "Collections, tags, and favorites", "Fast search across your entire stash"].map(item => <p className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[.03] px-4 py-3" key={item}><CheckCircle2 className="shrink-0 text-indigo-400" size={18} />{item}</p>)}</div>
+        <h1 className="mt-5 text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl xl:text-6xl">Less searching.<br /><span className="bg-gradient-to-r from-indigo-300 to-violet-400 bg-clip-text text-transparent">More building.</span></h1>
+        <p className="mt-5 max-w-lg text-base leading-7 text-slate-400 lg:text-lg lg:leading-8">Save the documentation, tools, and ideas worth keeping—organized and ready when you need them.</p>
+        <div className="mt-8 grid gap-2.5 text-sm text-slate-300 lg:mt-9">{["A private workspace for every account", "Collections, tags, and favorites", "Fast search across your entire stash"].map(item => <p className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[.03] px-4 py-2.5" key={item}><CheckCircle2 className="shrink-0 text-indigo-400" size={18} />{item}</p>)}</div>
       </div>
-      <p className="relative text-xs text-slate-500">Built for developers who value focus.</p>
+      <p className="relative shrink-0 text-xs text-slate-500">Built for developers who value focus.</p>
     </section>
-    <section className="relative grid place-items-center overflow-hidden bg-[radial-gradient(circle_at_top_right,color-mix(in_srgb,var(--accent)_12%,transparent),transparent_36%)] px-5 py-10 sm:px-8">
+    <section className="relative flex min-h-screen items-center justify-center overflow-x-hidden bg-[radial-gradient(circle_at_top_right,color-mix(in_srgb,var(--accent)_12%,transparent),transparent_36%)] px-5 py-10 sm:px-8 sm:py-14">
       <div className="pointer-events-none absolute bottom-0 left-0 size-72 rounded-full bg-indigo-500/[.05] blur-3xl" />
       <div className="relative w-full max-w-md">
         <div className="mb-6 lg:hidden"><Link href="/"><Logo /></Link></div>
