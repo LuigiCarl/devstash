@@ -10,7 +10,7 @@ async function enterGuest(page: Page) {
 test.describe("guest workspace", () => {
   test("enters a private guest workspace", async ({ page }) => {
     await enterGuest(page);
-    await expect(page.getByText("Guest workspace")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText("Guest workspace").first()).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole("link", { name: "Bookmarks" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Collections" })).toBeVisible();
   });
