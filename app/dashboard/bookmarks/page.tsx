@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Plus, Search, SlidersHorizontal, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { BookmarkCard, type BookmarkItem } from "@/components/bookmark-card";
 import { PageHeading } from "@/components/page-heading";
 import { toast } from "sonner";
@@ -46,6 +46,269 @@ function Dialog({ title, labelledBy, children, onClose }: { title: string; label
       {children}
     </div>
   </div>;
+}
+
+function BookmarkForm({
+  editing,
+  categories,
+  technologies,
+  tags,
+  onSave,
+  onCancel,
+  onCreateTag,
+}: {
+  editing: BookmarkItem | null;
+  categories: string[];
+  technologies: Technology[];
+  tags: Tag[];
+  onSave: (data: FormData) => Promise<void>;
+  onCancel: () => void;
+  onCreateTag: (name: string) => Promise<Tag | null>;
+}) {
+  const [url, setUrl] = useState(editing?.url ?? "");
+  const [title, setTitle] = useState(editing?.title ?? "");
+  const [category, setCategory] = useState(editing?.category ?? "Documentation");
+  const [technologyId, setTechnologyId] = useState(editing?.technologyId ?? "");
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
+    editing?.tags?.map(t => t.id) ?? []
+  );
+  const [isFavorite, setIsFavorite] = useState(Boolean(editing?.isFavorite));
+  const [newTag, setNewTag] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function handleUrlChange(val: string) {
+    setUrl(val);
+    if (!title) {
+      try {
+        const u = val.startsWith("http") ? new URL(val) : new URL(`https://${val}`);
+        const host = u.hostname.replace(/^www\./, "");
+        const parts = host.split(".");
+        const name = parts[0];
+        if (name && name.length > 1) {
+          setTitle(name.charAt(0).toUpperCase() + name.slice(1));
+        }
+      } catch {}
+    }
+  }
+
+  function toggleTag(id: string) {
+    setSelectedTagIds(prev =>
+      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
+    );
+  }
+
+  async function handleAddTag() {
+    if (!newTag.trim()) return;
+    const created = await onCreateTag(newTag);
+    if (created) {
+      setSelectedTagIds(prev => [...prev, created.id]);
+      setNewTag("");
+    }
+  }
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIsSubmitting(true);
+    const formData = new FormData(e.currentTarget);
+    try {
+      await onSave(formData);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
+      <div>
+        <div className="flex items-center justify-between">
+          <label htmlFor="url-input" className="text-xs font-semibold text-slate-300">
+            URL
+          </label>
+          <span className="text-[11px] font-normal text-indigo-400">Pasting suggests a title</span>
+        </div>
+        <input
+          id="url-input"
+          name="url"
+          value={url}
+          onChange={e => handleUrlChange(e.target.value)}
+          required
+          type="url"
+          pattern="https?://.*"
+          placeholder="https://example.com/docs"
+          autoFocus
+          className="mt-1 h-10 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 text-sm text-[var(--text)] placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="title-input" className="block text-xs font-semibold text-slate-300">
+          Title
+        </label>
+        <input
+          id="title-input"
+          name="title"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          required
+          placeholder="e.g. Next.js Documentation"
+          className="mt-1 h-10 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 text-sm text-[var(--text)] placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between">
+          <label htmlFor="description-input" className="text-xs font-semibold text-slate-300">
+            Description
+          </label>
+          <span className="text-[11px] font-normal text-slate-500">Optional</span>
+        </div>
+        <textarea
+          id="description-input"
+          name="description"
+          defaultValue={editing?.description ?? ""}
+          rows={2}
+          placeholder="Quick summary or notes on why this is useful..."
+          className="mt-1 min-h-[64px] w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] p-3 text-sm text-[var(--text)] placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+          Category
+        </label>
+        <input type="hidden" name="category" value={category} />
+        <div className="flex flex-wrap gap-1.5">
+          {categories.map(cat => {
+            const isSelected = category === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setCategory(cat)}
+                className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
+                  isSelected
+                    ? "bg-indigo-600 text-white shadow-sm"
+                    : "border border-[var(--line)] bg-[var(--bg)] text-slate-400 hover:text-white hover:bg-[var(--soft)]"
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between">
+          <label htmlFor="technology-select" className="text-xs font-semibold text-slate-300">
+            Technology
+          </label>
+          <span className="text-[11px] font-normal text-slate-500">Optional</span>
+        </div>
+        <select
+          id="technology-select"
+          name="technologyId"
+          value={technologyId}
+          onChange={e => setTechnologyId(e.target.value)}
+          className="mt-1 h-9 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 text-xs sm:text-sm text-[var(--text)] focus:border-indigo-500 focus:outline-none"
+        >
+          <option value="">No technology</option>
+          {technologies.map(t => (
+            <option key={t.id} value={t.id}>{t.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-xs font-semibold text-slate-300">Tags</label>
+          <div className="flex items-center gap-1">
+            <input
+              value={newTag}
+              onChange={e => setNewTag(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void handleAddTag();
+                }
+              }}
+              placeholder="+ Add new tag"
+              className="h-6 w-24 rounded-md border border-[var(--line)] bg-transparent px-1.5 text-[11px] placeholder:text-slate-500 focus:w-32 focus:border-indigo-500 focus:outline-none transition-all"
+            />
+            {newTag.trim() && (
+              <button
+                type="button"
+                onClick={() => void handleAddTag()}
+                className="h-6 rounded-md bg-indigo-600 px-1.5 text-[10px] font-bold text-white hover:bg-indigo-500"
+              >
+                Add
+              </button>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {tags.map(tag => {
+            const isChecked = selectedTagIds.includes(tag.id);
+            return (
+              <label
+                key={tag.id}
+                className={`cursor-pointer inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs transition border select-none ${
+                  isChecked
+                    ? "border-indigo-500 bg-indigo-500/15 text-indigo-400 font-semibold"
+                    : "border-[var(--line)] bg-[var(--bg)] text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <input
+                  name="tagIds"
+                  value={tag.id}
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={() => toggleTag(tag.id)}
+                  className="size-3.5 rounded accent-indigo-600"
+                />
+                #{tag.name}
+              </label>
+            );
+          })}
+          {tags.length === 0 && (
+            <span className="text-xs text-slate-500">No tags yet. Type above to create one.</span>
+          )}
+        </div>
+      </div>
+
+      <div className="pt-1">
+        <label htmlFor="favorite-checkbox" className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium cursor-pointer select-none">
+          <input
+            id="favorite-checkbox"
+            name="isFavorite"
+            type="checkbox"
+            checked={isFavorite}
+            onChange={e => setIsFavorite(e.target.checked)}
+            className="size-4 rounded border-[var(--line)] bg-[var(--bg)] accent-indigo-600"
+          />
+          <Heart size={15} className={isFavorite ? "fill-rose-500 text-rose-500" : "text-slate-400"} />
+          <span>Favorite</span>
+        </label>
+      </div>
+
+      <div className="flex justify-end gap-2 pt-2 border-t border-[var(--line)]/60">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-xl border border-[var(--line)] px-4 py-2 text-xs sm:text-sm font-medium hover:bg-[var(--soft)]"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="rounded-xl bg-indigo-600 px-5 py-2 text-xs sm:text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-50"
+        >
+          {isSubmitting ? "Saving..." : "Save"}
+        </button>
+      </div>
+    </form>
+  );
 }
 
 export default function Bookmarks() {
@@ -315,7 +578,40 @@ export default function Bookmarks() {
       </nav>
       <label className="muted flex items-center gap-2 text-sm">Show<select value={filters.pageSize} onChange={event => update({ pageSize: Number(event.target.value), page: 1 })} className="h-9 rounded-lg border border-[var(--line)] bg-[var(--panel)] px-2 text-[var(--text)]"><option value={6}>6</option><option value={12}>12</option><option value={24}>24</option><option value={48}>48</option></select></label>
     </div>}
-    {dialog === "bookmark" && <Dialog title={editing ? "Edit bookmark" : "Add bookmark"} labelledBy="bookmark-dialog-title" onClose={() => { setDialog(null); setEditing(null); }}><form action={save} className="mt-4 space-y-4"><label className="block text-sm font-medium">Title<input name="title" defaultValue={editing?.title} required className="mt-2 h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3" /></label><label className="block text-sm font-medium">URL<input name="url" defaultValue={editing?.url} required type="url" pattern="https?://.*" className="mt-2 h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3" /></label><label className="block text-sm font-medium">Description<textarea name="description" defaultValue={editing?.description ?? ""} className="mt-2 min-h-20 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] p-3" /></label><label className="block text-sm font-medium">Category<select name="category" defaultValue={editing?.category ?? "Documentation"} className="mt-2 h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3">{categories.map(category => <option key={category}>{category}</option>)}</select></label><label className="block text-sm font-medium">Technology<select name="technologyId" defaultValue={editing?.technologyId ?? ""} className="mt-2 h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3"><option value="">No technology</option>{technologies.map(technology => <option key={technology.id} value={technology.id}>{technology.name}</option>)}</select></label><fieldset><div className="flex items-center justify-between"><legend className="text-sm font-medium">Tags</legend><button type="button" onClick={() => setDialog("tag")} className="text-xs font-semibold text-[var(--accent)]">+ New tag</button></div><div className="mt-2 flex flex-wrap gap-2">{tags.map(tag => <span key={tag.id} className="flex items-center gap-1 rounded-lg border border-[var(--line)] px-2 py-1 text-xs"><label><input name="tagIds" value={tag.id} type="checkbox" defaultChecked={editing?.tags?.some(item => item.id === tag.id)} className="mr-1" />#{tag.name}</label><button type="button" onClick={() => void deleteTag(tag)} aria-label={`Delete tag ${tag.name}`} className="text-rose-500">×</button></span>)}</div></fieldset><label className="flex gap-2 text-sm"><input name="isFavorite" type="checkbox" defaultChecked={editing?.isFavorite} /> Favorite</label><div className="flex justify-end gap-2"><button type="button" onClick={() => setDialog(null)} className="rounded-xl border border-[var(--line)] px-4 py-2">Cancel</button><button className="rounded-xl bg-indigo-600 px-4 py-2 text-white">Save</button></div></form></Dialog>}
+    {dialog === "bookmark" && (
+      <Dialog
+        title={editing ? "Edit bookmark" : "Add bookmark"}
+        labelledBy="bookmark-dialog-title"
+        onClose={() => { setDialog(null); setEditing(null); }}
+      >
+        <BookmarkForm
+          editing={editing}
+          categories={categories}
+          technologies={technologies}
+          tags={tags}
+          onSave={save}
+          onCancel={() => { setDialog(null); setEditing(null); }}
+          onCreateTag={async (name: string) => {
+            const trimmed = name.trim();
+            if (!trimmed) return null;
+            const res = await fetch("/api/tags", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name: trimmed }),
+            });
+            const result = await res.json();
+            if (!res.ok) {
+              toast.error(result.error ?? "Could not create tag");
+              return null;
+            }
+            setTags(value => [...value, result.data].sort((a, b) => a.name.localeCompare(b.name)));
+            window.dispatchEvent(new Event("devstash:tags-changed"));
+            toast.success(`Tag #${trimmed} created`);
+            return result.data;
+          }}
+        />
+      </Dialog>
+    )}
     {dialog === "tag" && <Dialog title="Create tag" labelledBy="tag-dialog-title" onClose={() => setDialog("bookmark")}><form action={createTag} className="mt-4 space-y-4"><label className="block text-sm font-medium">Tag name<input name="name" required autoFocus className="mt-2 h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3" /></label><div className="flex justify-end gap-2"><button type="button" onClick={() => setDialog("bookmark")} className="rounded-xl border border-[var(--line)] px-4 py-2">Cancel</button><button className="rounded-xl bg-indigo-600 px-4 py-2 text-white">Create tag</button></div></form></Dialog>}
     {dialog === "delete" && <Dialog title="Delete bookmark?" labelledBy="delete-dialog-title" onClose={() => setDialog(null)}><p className="muted mt-4 text-sm">This will permanently remove “{deleteTarget?.title}”.</p><div className="mt-6 flex justify-end gap-2"><button onClick={() => setDialog(null)} className="rounded-xl border border-[var(--line)] px-4 py-2">Cancel</button><button onClick={() => void remove()} className="rounded-xl bg-rose-600 px-4 py-2 text-white">Delete</button></div></Dialog>}
   </>;
